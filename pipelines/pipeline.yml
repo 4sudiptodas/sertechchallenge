@@ -1,0 +1,72 @@
+name: $(Date:yyyyMMdd).$(Rev:r)
+
+# Pipeline is run on commits, tags PRs and master and dev branch
+trigger:
+  tags:
+    include: 
+    - '*'
+  branches:
+    include:
+    - master
+    - development
+    - feature/pipeline
+# Run pipeline whenever a PR is raised
+pr:
+  branches:
+    include:
+    - master
+
+  paths:
+    exclude:
+     - .github
+     - .vscode
+     - ReadME.md
+     - pipelines/**/*
+
+stages:
+  - stage: Build
+    jobs:
+    - job: 'Build'
+      pool:
+        vmImage: 'ubuntu-latest'
+      steps:
+      - template: 'templates/build.yaml'
+
+  - stage: QTRDEV
+    displayName: 'Deploy to QTRDEV environment'
+    dependsOn: Build
+    jobs:
+    - deployment: QTRDEV
+      pool:               
+        name: 'Azure Pipelines'
+        vmImage: 'vs2017-win2016'
+      displayName: 'Deploy to QTRDEV Environment'
+      variables:
+      - group: New Relic
+      - group: Splunk HTTP Collector NONPROD
+      - group: AGL.SelfService.Telco.Accounts QtrDEV 
+      environment: accounts-qtrdev
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - template: 'templates/deploy-rg.yaml'
+              parameters:
+                subscriptionId: '333ef09f-c8cf-48f4-92fb-7d9bc4409b9a'
+                environment: 'qtrdev'
+                rootServiceConnectionName: 'digital-services-telco-nonprod-service-connection'
+                resourceServiceConnectionName: 'digital-services-telco-nonprod-api-service-connection'
+                resourceGroupName: 'agl-telco-accounts-api-qtrdev-rg'
+                resourceGroupLocation: 'australiasoutheast'
+                resourceGroupParametersFile: '$(Pipeline.Workspace)/ARM/resourceGroup/template.parameters.nonprod.json'
+                lockParametersFile: '$(Pipeline.Workspace)/ARM/lock/template.parameters.nonprod.json'
+            - template: 'templates/deployApi.yaml'
+              parameters:
+                environment: 'qtrdev'
+                resourceServiceConnectionName: 'digital-services-telco-nonprod-api-service-connection'
+                resourceGroupName: 'agl-telco-accounts-api-qtrdev-rg'
+                location: 'australiasoutheast'
+                templateStorageresourceGroupName: 'agl-api-shared-nonprod-rg'
+                templateStorageAccountName: 'aglapitelcosharednonprod'
+                templateParameterFile: 'parameters.qtrdev.json'
+                WebAppName: agl-telco-accounts-qtrdev-api
