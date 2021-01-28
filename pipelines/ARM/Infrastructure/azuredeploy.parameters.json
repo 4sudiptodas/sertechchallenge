@@ -24,7 +24,7 @@
             "value": "GP_Gen5_2"
         },
         "dbSkuSizeMB": {
-            "value": "51200"
+            "value": 51200
         },
         "dbSkuTier": {
             "value": "GeneralPurpose"
