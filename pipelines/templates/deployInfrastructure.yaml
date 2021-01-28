@@ -23,8 +23,15 @@ trigger:
      - ReadME.md
 
 stages:
-  - stage: Infra_Creation
+  - stage: Infra
+    displayName: 'Infra'
     jobs:
+    - deployment: Infra
+      pool:
+        name: 'Azure Pipelines'
+        vmImage: 'vs2017-win2016'
+      displayName: 'Infra Structure'
+      environment: infra
       strategy:
         runOnce:
           deploy:
