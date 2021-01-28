@@ -263,7 +263,7 @@
             "type": "Microsoft.ContainerService/managedClusters",
             "apiVersion": "2020-03-01",
             "name": "[parameters('clusterName')]",
-            "location": "[parameters('location')]",
+            "location": "australiaeast",
             "properties": {
                 "dnsPrefix": "[parameters('dnsPrefix')]",
                 "agentPoolProfiles": [
