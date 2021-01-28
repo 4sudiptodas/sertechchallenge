@@ -1,72 +1,61 @@
 name: $(Date:yyyyMMdd).$(Rev:r)
 
-# Pipeline is run on commits, tags PRs and master and dev branch
-trigger:
-  tags:
-    include: 
-    - '*'
-  branches:
-    include:
-    - master
-    - development
-    - feature/pipeline
-# Run pipeline whenever a PR is raised
-pr:
-  branches:
-    include:
-    - master
 
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - feature/pipeline
   paths:
     exclude:
-     - .github
-     - .vscode
+     - doc
      - ReadME.md
-     - pipelines/**/*
 
 stages:
-  - stage: Build
-    jobs:
-    - job: 'Build'
-      pool:
-        vmImage: 'ubuntu-latest'
-      steps:
-      - template: 'templates/build.yaml'
+- stage: Build
+  jobs:
+  - job: 'BuildArtifacts'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: ShellScript@2
+      displayName: Run Build App
+      inputs:
+        scriptPath: '$(Build.SourcesDirectory)/build.sh'
+        failOnStandardError: false
 
-  - stage: QTRDEV
-    displayName: 'Deploy to QTRDEV environment'
-    dependsOn: Build
-    jobs:
-    - deployment: QTRDEV
-      pool:               
-        name: 'Azure Pipelines'
-        vmImage: 'vs2017-win2016'
-      displayName: 'Deploy to QTRDEV Environment'
-      variables:
-      - group: New Relic
-      - group: Splunk HTTP Collector NONPROD
-      - group: AGL.SelfService.Telco.Accounts QtrDEV 
-      environment: accounts-qtrdev
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - template: 'templates/deploy-rg.yaml'
-              parameters:
-                subscriptionId: '333ef09f-c8cf-48f4-92fb-7d9bc4409b9a'
-                environment: 'qtrdev'
-                rootServiceConnectionName: 'digital-services-telco-nonprod-service-connection'
-                resourceServiceConnectionName: 'digital-services-telco-nonprod-api-service-connection'
-                resourceGroupName: 'agl-telco-accounts-api-qtrdev-rg'
-                resourceGroupLocation: 'australiasoutheast'
-                resourceGroupParametersFile: '$(Pipeline.Workspace)/ARM/resourceGroup/template.parameters.nonprod.json'
-                lockParametersFile: '$(Pipeline.Workspace)/ARM/lock/template.parameters.nonprod.json'
-            - template: 'templates/deployApi.yaml'
-              parameters:
-                environment: 'qtrdev'
-                resourceServiceConnectionName: 'digital-services-telco-nonprod-api-service-connection'
-                resourceGroupName: 'agl-telco-accounts-api-qtrdev-rg'
-                location: 'australiasoutheast'
-                templateStorageresourceGroupName: 'agl-api-shared-nonprod-rg'
-                templateStorageAccountName: 'aglapitelcosharednonprod'
-                templateParameterFile: 'parameters.qtrdev.json'
-                WebAppName: agl-telco-accounts-qtrdev-api
+    - task: CmdLine@2
+      displayName: Run DB Migration and feed data
+      inputs:
+        script: ./TechChallengeApp updatedb
+        workingDirectory: '$(Build.SourcesDirectory)/dist'
+        failOnStderr: false
+
+    - task: Docker@2
+      displayName: Build and Push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: sertechchallenge-docker
+        Dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+        containerRegistry: sertechacr
+        tags: latest
+
+    - publish: $(Build.SourcesDirectory)/pipelines
+      artifact: artifacts
+
+- stage: DeployCode
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'feature/pipeline'))
+  dependsOn: ['Build']
+  jobs:
+  - deployment: Deployment
+    pool:
+        vmImage: 'ubuntu-latest'
+    environment: DEV
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: artifacts
+          - template: 'templates/deploy.yaml'

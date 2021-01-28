@@ -16,7 +16,6 @@ trigger:
   branches:
     include:
     - master
-    - feature/pipeline
   paths:
     exclude:
      - doc
