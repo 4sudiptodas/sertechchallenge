@@ -44,7 +44,7 @@ stages:
       artifact: artifacts
 
 - stage: DeployCode
-  dependsOn: ['Build']
+  dependsOn: ['BuildCode']
   jobs:
   - deployment: Deployment
     pool:
