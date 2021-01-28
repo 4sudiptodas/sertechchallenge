@@ -15,7 +15,7 @@
             "value": "admina136186"
         },
         "administratorLoginPassword": {
-            "value": "A$dmin12345678910"
+            "value": "xxxx"
         },
         "dbSkuCapacity": {
             "value": 2
@@ -48,7 +48,7 @@
             "value": "2bcde08f-ca9a-46c0-ba03-e19e16cac854"
         },
         "servicePrincipalClientSecret": {
-            "value": "3i~zmJBLH3D.mFBAF44qCsmEZwYji1Cph~"
+            "value": "xxxx"
         },
         "osType": {
             "value": "Linux"
