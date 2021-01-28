@@ -1,0 +1,59 @@
+name: $(Date:yyyyMMdd).$(Rev:r)
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - feature/pipeline
+  paths:
+    exclude:
+     - doc
+     - ReadME.md
+
+stages:
+- stage: BuildCode
+  jobs:
+  - job: 'BuildArtifacts'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: ShellScript@2
+      displayName: Run Build App
+      inputs:
+        scriptPath: '$(Build.SourcesDirectory)/build.sh'
+        failOnStandardError: false
+
+    - task: CmdLine@2
+      displayName: DB Migration and feed
+      inputs:
+        script: ./TechChallengeApp updatedb
+        workingDirectory: '$(Build.SourcesDirectory)/dist'
+        failOnStderr: false
+
+    - task: Docker@2
+      displayName: Build and Push image to container registry
+      inputs:
+        command: buildAndPush
+        repository: sertechchallenge-docker
+        Dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+        containerRegistry: sertechacr
+        tags: latest
+
+    - publish: $(Build.SourcesDirectory)/pipelines
+      artifact: artifacts
+
+- stage: DeployCode
+  dependsOn: ['BuildCode']
+  jobs:
+  - deployment: Deployment
+    pool:
+        vmImage: 'ubuntu-latest'
+    environment: DEV
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - download: current
+            artifact: artifacts
+          - template: 'templates/deploy.yaml'

@@ -1,0 +1,55 @@
+name: $(Date:yyyyMMdd).$(Rev:r)
+
+variables:
+  - name: deploymentMode
+    value: 'incremental'
+  - name: azureServiceConnection
+    value: 'azurepersonalsubscription'
+  - name: subscriptionId
+    value: '6c880a5e-6767-42bc-a134-247121a40564'
+  - name: resourceGroup
+    value: 'sertech-challenge-rg'
+
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    exclude:
+     - doc
+     - ReadME.md
+
+stages:
+
+  - stage: Build
+    jobs:
+    - job: 'Build'
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+      - template: 'artifactpublish.yaml'
+
+  - stage: Infra
+    displayName: 'Infra'
+    jobs:
+    - deployment: Infra
+      pool:
+        name: 'Azure Pipelines'
+        vmImage: 'vs2017-win2016'
+      displayName: 'InfraStructure Deployment'
+      environment: infra
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: AzureResourceManagerTemplateDeployment@3
+              displayName: 'Infrastructure Creation'
+              inputs:
+                azureResourceManagerConnection: '$(azureServiceConnection)'
+                subscriptionId: '$(subscriptionId)'
+                resourceGroupName: '$(resourceGroup)'
+                location: 'Australia Southeast'
+                csmFile: '$(Pipeline.Workspace)/templateartifacts/ARM/Infrastructure/azureDeploy.json'
+                csmParametersFile: '$(Pipeline.Workspace)/templateartifacts/ARM/Infrastructure/azuredeploy.parameters.json'

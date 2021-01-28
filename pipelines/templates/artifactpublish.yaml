@@ -1,0 +1,6 @@
+steps:
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Scripts'
+    inputs:
+        PathtoPublish: 'pipelines'
+        ArtifactName: 'templateartifacts'
