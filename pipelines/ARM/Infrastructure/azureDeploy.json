@@ -223,7 +223,7 @@
             "type": "Microsoft.DBforPostgreSQL/servers",
             "apiVersion": "2017-12-01",
             "name": "[parameters('dbServerName')]",
-            "location": "[parameters('location')]",
+            "location": "eastus",
             "sku": {
                 "name": "[parameters('dbSkuName')]",
                 "tier": "[parameters('dbSkuTier')]",
