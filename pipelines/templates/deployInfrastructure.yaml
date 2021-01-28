@@ -23,6 +23,15 @@ trigger:
      - ReadME.md
 
 stages:
+
+  - stage: Build
+    jobs:
+    - job: 'Build'
+      pool:
+        vmImage: 'windows-latest'
+      steps:
+      - template: 'artifactpublish.yaml'
+
   - stage: Infra
     displayName: 'Infra'
     jobs:
@@ -43,5 +52,5 @@ stages:
                 subscriptionId: '$(subscriptionId)'
                 resourceGroupName: '$(resourceGroup)'
                 location: 'Australia Southeast'
-                csmFile: '$(Build.SourcesDirectory)/ARM/Infrastructure/azureDeploy.json'
-                csmParametersFile: '$(Build.SourcesDirectory)/ARM/Infrastructure/azuredeploy.parameters.json'
+                csmFile: '$(Pipeline.Workspace)/templateartifacts/pipelines/ARM/Infrastructure/azureDeploy.json'
+                csmParametersFile: '$(Pipeline.Workspace)/templateartifacts/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'
