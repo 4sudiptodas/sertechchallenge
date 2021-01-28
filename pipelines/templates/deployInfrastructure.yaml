@@ -24,17 +24,13 @@ trigger:
 
 stages:
   - stage: Infra_Creation
-  jobs:
-    strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: AzureResourceManagerTemplateDeployment@3
-              displayName: 'Infrastructure Creation'
-              inputs:
-                azureResourceManagerConnection: '$(azureServiceConnection)'
-                subscriptionId: '$(subscriptionId)'
-                resourceGroupName: '$(resourceGroup)'
-                location: 'Australia Southeast'
-                csmFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azureDeploy.json'
-                csmParametersFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'
+    jobs:
+      - task: AzureResourceManagerTemplateDeployment@3
+        displayName: 'Infrastructure Creation'
+        inputs:
+          azureResourceManagerConnection: '$(azureServiceConnection)'
+          subscriptionId: '$(subscriptionId)'
+          resourceGroupName: '$(resourceGroup)'
+          location: 'Australia Southeast'
+          csmFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azureDeploy.json'
+          csmParametersFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'
