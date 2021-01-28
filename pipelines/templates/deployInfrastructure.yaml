@@ -30,7 +30,7 @@ stages:
       pool:
         name: 'Azure Pipelines'
         vmImage: 'vs2017-win2016'
-      displayName: 'Infra Structure'
+      displayName: 'InfraStructure Deployment'
       environment: infra
       strategy:
         runOnce:
@@ -43,5 +43,5 @@ stages:
                 subscriptionId: '$(subscriptionId)'
                 resourceGroupName: '$(resourceGroup)'
                 location: 'Australia Southeast'
-                csmFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azureDeploy.json'
-                csmParametersFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'
+                csmFile: '$(Build.SourcesDirectory)/pipelines/ARM/Infrastructure/azureDeploy.json'
+                csmParametersFile: '$(Build.SourcesDirectory)/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'
