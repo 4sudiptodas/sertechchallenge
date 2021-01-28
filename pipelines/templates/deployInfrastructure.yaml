@@ -1,0 +1,36 @@
+name: $(Date:yyyyMMdd).$(Rev:r)
+
+variables:
+  - name: deploymentMode
+    value: 'incremental'
+  - name: azureServiceConnection
+    value: 'azurepersonalsubscription'
+  - name: subscriptionId
+    value: '6c880a5e-6767-42bc-a134-247121a40564'
+  - name: resourceGroup
+    value: 'sertech-challenge-rg'
+
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - feature/pipeline
+  paths:
+    exclude:
+     - doc
+     - ReadME.md
+
+stages:
+- stage: Infra_Creation
+  jobs:
+    - task: AzureResourceManagerTemplateDeployment@3
+      displayName: 'Infrastructure Creation'
+      inputs:
+        azureResourceManagerConnection: '$(azureServiceConnection)'
+        subscriptionId: '$(subscriptionId)'
+        resourceGroupName: '$(resourceGroup)'
+        location: 'Australia Southeast'
+        csmFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azureDeploy.json'
+        csmParametersFile: '$(Build.Repository.LocalPath)/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'

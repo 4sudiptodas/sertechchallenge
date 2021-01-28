@@ -3,10 +3,55 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "acrName": {
-            "value": "$(acrName)"
+            "value": "sertechregistry"
         },
         "acrSku": {
-            "value": "$(acrSku)"
+            "value": "Basic"
+        },
+        "dbServerName": {
+            "value": "sertechdbserver"
+        },
+        "administratorLogin": {
+            "value": "admin"
+        },
+        "administratorLoginPassword": {
+            "value": "admin"
+        },
+        "dbSkuCapacity": {
+            "value": 2
+        },
+        "dbSkuName": {
+            "value": "GP_Gen5_2"
+        },
+        "dbSkuSizeMB": {
+            "value": "51200"
+        },
+        "dbSkuTier": {
+            "value": "GeneralPurpose"
+        },
+        "dbSkuFamily": {
+            "value": "Gen4"
+        },
+        "clusterName": {
+            "value": "sertechaks"
+        },
+        "dnsPrefix": {
+            "value": "sertechaks"
+        },
+        "linuxAdminUsername": {
+            "value": "azureadmin"
+        },
+        "sshRSAPublicKey": {
+            "value": "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAxnsOGFa38rdFEx6Tqexrc+awSPyd8gEEOEIuH9P7zX6qFLCwoXpSvZ7ZKRifC9NxOlQZCqXHkupzseZdXC54cBRbTX8NDbw1w6MOeNK17a6OfX7DxSMLufVmPuoxpMeEDmtpROqnRCWryINpeC52e8cZrG9mrNDvE3E7a51WTIyP5WjAbHSU0WN9dXosW4MJ64jhxd6fP/wB01X4VjOQdpPtwBcjrkTi+AsPtYZAV5xNMnhON8QgNmZhjjQ5JiW4ekBon0MHjVG9GOtf32y7488xXiUwYqDUQmAu+7a5A3gfbmOOXpx6UNtYovkyqlUqCCXyYTkNAQncuoqAcI2W/Q=="
+        },
+        "servicePrincipalClientId": {
+            "value": "5cdd2284-f195-4542-bfcd-32ed8163a72c"
+        },
+        "servicePrincipalClientSecret": {
+            "value": "9~z6ep-hWt5v-qdg62YYFMpd_tG61Bs8zX"
+        },
+        "osType": {
+            "value": "Linux"
         }
     }
 }
