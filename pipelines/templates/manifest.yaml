@@ -14,8 +14,6 @@ spec:
     spec:
       nodeSelector:
         "beta.kubernetes.io/os": linux
-      imagePullSecrets:
-       - name: acrsecret
       containers:
       - name: sertechchallenge-aks
         image: sertechregistry.azurecr.io/sertechchallenge-docker:latest

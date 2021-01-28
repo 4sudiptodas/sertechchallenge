@@ -40,9 +40,6 @@ stages:
         containerRegistry: sertechacr
         tags: latest
 
-    - publish: $(Build.SourcesDirectory)/pipelines
-      artifact: artifacts
-
 - stage: DeployCode
   dependsOn: ['BuildCode']
   jobs:
