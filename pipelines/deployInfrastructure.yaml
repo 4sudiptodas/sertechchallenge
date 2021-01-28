@@ -43,5 +43,5 @@ stages:
                 subscriptionId: '$(subscriptionId)'
                 resourceGroupName: '$(resourceGroup)'
                 location: 'Australia Southeast'
-                csmFile: '$(Build.SourcesDirectory)/pipelines/ARM/Infrastructure/azureDeploy.json'
-                csmParametersFile: '$(Build.SourcesDirectory)/pipelines/ARM/Infrastructure/azuredeploy.parameters.json'
+                csmFile: '$(Build.SourcesDirectory)/ARM/Infrastructure/azureDeploy.json'
+                csmParametersFile: '$(Build.SourcesDirectory)/ARM/Infrastructure/azuredeploy.parameters.json'
